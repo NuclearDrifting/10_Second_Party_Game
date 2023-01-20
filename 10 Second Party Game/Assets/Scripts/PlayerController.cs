@@ -32,16 +32,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField]
     private TextMeshProUGUI result;
     [SerializeField]
+    private TextMeshProUGUI title;
+    [SerializeField]
     private float timeleft = 10;
-    private string time;
     private int scoreValue = 0;
+
+    [SerializeField]
+    private AudioSource ambient;
 
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         isOnGround = false;
         SpriteRenderer.sprite = right;
+        title.text = "Bird Feed!\nUse WASD to collect all five seeds to win!";
         result.text = "Press P to start";
+        ambient.enabled = false;
     }
 
     void Update()
@@ -67,6 +73,8 @@ public class PlayerController : MonoBehaviour
             rb2d.bodyType = RigidbodyType2D.Dynamic;
             gamestarted = true;
             result.text = "";
+            title.text = "";
+            ambient.enabled = true;
         }
 
         if (gamestarted == true)
@@ -146,7 +154,7 @@ public class PlayerController : MonoBehaviour
 
         if (Input.GetKey(KeyCode.R) && gamefinished == true)
         {
-            SceneManager.LoadScene("SampleScene");
+            SceneManager.LoadScene("MainGame");
         }
 
         if (Input.GetKey(KeyCode.Q) && gamefinished == true)
@@ -164,7 +172,6 @@ public class PlayerController : MonoBehaviour
             Destroy(collision.collider.gameObject);
         }
     }
-
 
     private void OnCollisionStay2D(Collision2D collision)
     {
