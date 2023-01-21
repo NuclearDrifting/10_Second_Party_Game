@@ -36,12 +36,27 @@ public class PlayerController : MonoBehaviour
     private string time;
     private int scoreValue = 0;
 
+    [SerializeField]
+    private AudioSource EnvironmentAudio;
+    [SerializeField]
+    private AudioSource Crunch;
+    [SerializeField]
+    private AudioSource Win;
+    [SerializeField]
+    private AudioSource Lose;
+    [SerializeField]
+    private AudioClip background;
+    [SerializeField]
+    private AudioClip win;
+    [SerializeField]
+    private AudioClip lose;
+
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
-        isOnGround = false;
         SpriteRenderer.sprite = right;
         result.text = "Press P to start";
+        EnvironmentAudio.Play();
     }
 
     void Update()
@@ -67,6 +82,7 @@ public class PlayerController : MonoBehaviour
             rb2d.bodyType = RigidbodyType2D.Dynamic;
             gamestarted = true;
             result.text = "";
+            EnvironmentAudio.clip = background;
         }
 
         if (gamestarted == true)
@@ -134,6 +150,7 @@ public class PlayerController : MonoBehaviour
             gamefinished = true;
             rb2d.bodyType = RigidbodyType2D.Static;
             result.text = "You won!\nPress R to restart.\nPres Q to quit.";
+            Win.Play();
         }
 
         if (scoreValue < 5 && playerlost == true)
@@ -142,6 +159,7 @@ public class PlayerController : MonoBehaviour
             gamefinished = true;
             rb2d.bodyType = RigidbodyType2D.Static;
             result.text = "You lost!\nPress R to restart.\nPres Q to quit.";
+            Lose.Play();
         }
 
         if (Input.GetKey(KeyCode.R) && gamefinished == true)
@@ -159,12 +177,12 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.collider.tag == "Seed")
         {
+            Crunch.Play();
             scoreValue += 1;
             score.text = scoreValue.ToString();
             Destroy(collision.collider.gameObject);
         }
     }
-
 
     private void OnCollisionStay2D(Collision2D collision)
     {

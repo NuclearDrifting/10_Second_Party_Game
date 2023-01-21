@@ -4,20 +4,19 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Ground
-  - Seed
+  - Shootable
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - Confiner
+  - 
   - Water
   - UI
   - 
   - 
-  - 
-  - 
-  - 
+  - Lighting
+  - Ground
+  - Postprocessing
   - 
   - 
   - 
@@ -40,6 +39,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Fire
+    uniqueID: 3804908061
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
