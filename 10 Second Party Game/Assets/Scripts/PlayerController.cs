@@ -10,9 +10,7 @@ public class PlayerController : MonoBehaviour
     bool isOnGround;
     [SerializeField]
     private float jumpForce;
-    bool gamestarted = false;
-    bool gamefinished = false;
-    bool playerlost = false;
+    private string gameStatus;
 
     [SerializeField]
     private Sprite left;
@@ -46,46 +44,40 @@ public class PlayerController : MonoBehaviour
     private AudioSource Lose;
     [SerializeField]
     private AudioClip background;
-    [SerializeField]
-    private AudioClip win;
-    [SerializeField]
-    private AudioClip lose;
 
     void Start()
     {
         rb2d = GetComponent<Rigidbody2D>();
         SpriteRenderer.sprite = right;
-        result.text = "Press P to start";
+        result.text = "Seed Collector\nUse W, A, and D to move\nPress P to start";
         EnvironmentAudio.Play();
+        gameStatus = "Starting";
     }
 
-    void Update()
+    void FixedUpdate()
     {
-        float hozMovement = Input.GetAxis("Horizontal");
-        rb2d.velocity = new Vector2(hozMovement * speed, rb2d.velocity.y);
-        score.text = ($"Score: {scoreValue.ToString()}");
-        UpdateTimer();
-
-        if (Input.GetKey(KeyCode.Escape))
+        if (rb2d.bodyType == RigidbodyType2D.Dynamic)
         {
-            Application.Quit();
+            float hozMovement = Input.GetAxis("Horizontal");
+            rb2d.velocity = new Vector2(hozMovement * speed, rb2d.velocity.y);
+            score.text = ($"Score: {scoreValue.ToString()}");
         }
 
+        UpdateTimer();
         Jump();
         SpriteUpdate();
         States();
     }
     private void UpdateTimer()
     {
-        if (Input.GetKey(KeyCode.P) && gamefinished == false)
+        if (Input.GetKey(KeyCode.P) && gameStatus == "Starting")
         {
             rb2d.bodyType = RigidbodyType2D.Dynamic;
-            gamestarted = true;
+            gameStatus = "Running";
             result.text = "";
-            EnvironmentAudio.clip = background;
         }
 
-        if (gamestarted == true)
+        if (gameStatus == "Running")
         {
             timeleft = timeleft -= Time.deltaTime;
             timeLeft.text = ($"Time Left: {timeleft.ToString("F1")}");
@@ -93,9 +85,7 @@ public class PlayerController : MonoBehaviour
 
         if (timeleft < 0.04)
         {
-            gamestarted = false;
-            gamefinished = true;
-            playerlost = true;
+            gameStatus = "Ending";
             rb2d.bodyType = RigidbodyType2D.Static;
             States();
         }
@@ -106,7 +96,6 @@ public class PlayerController : MonoBehaviour
         if (Input.GetKey(KeyCode.W) && isOnGround == true)
         {
             isOnGround = false;
-
             rb2d.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
         }
     }
@@ -146,28 +135,25 @@ public class PlayerController : MonoBehaviour
     {
         if (scoreValue == 5)
         {
-            gamestarted = false;
-            gamefinished = true;
-            rb2d.bodyType = RigidbodyType2D.Static;
+            gameStatus = "Complete";
             result.text = "You won!\nPress R to restart.\nPres Q to quit.";
+            rb2d.bodyType = RigidbodyType2D.Static;
             Win.Play();
         }
 
-        if (scoreValue < 5 && playerlost == true)
+        if (scoreValue < 5 && gameStatus == "Ending")
         {
-            gamestarted = false;
-            gamefinished = true;
-            rb2d.bodyType = RigidbodyType2D.Static;
-            result.text = "You lost!\nPress R to restart.\nPres Q to quit.";
+            gameStatus = "Complete";
             Lose.Play();
+            result.text = "You lost!\nPress R to restart.\nPres Q to quit.";
         }
 
-        if (Input.GetKey(KeyCode.R) && gamefinished == true)
+        if (Input.GetKey(KeyCode.R) && gameStatus == "Complete")
         {
             SceneManager.LoadScene("SampleScene");
         }
 
-        if (Input.GetKey(KeyCode.Q) && gamefinished == true)
+        if (Input.GetKey(KeyCode.Q) && gameStatus == "Complete")
         {
             Application.Quit();
         }
